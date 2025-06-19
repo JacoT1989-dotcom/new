@@ -12,8 +12,8 @@ const nextConfig = {
       },
     ],
   },
-  // Force static optimization
-  output: "standalone",
+  // Remove output standalone for Vercel
+  // output: 'standalone',
 };
 
 export default nextConfig;
