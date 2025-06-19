@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Closer™ - Deal War Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Tab styles */
+        .tab-button {
+            position: relative;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .tab-button:hover {
+            color: #374151;
+        }
+        .tab-button.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+        
+        /* Health score animation */
+        .health-ring {
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        
+        /* Stakeholder influence matrix */
+        .influence-dot {
+            transition: all 0.3s ease;
+        }
+        .influence-dot:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Timeline styles */
+        .timeline-connector {
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        .timeline-item:last-child .timeline-connector {
+            display: none;
+        }
+        
+        /* Action button animations */
+        .action-button {
+            transition: all 0.2s ease;
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation (Collapsed for Deal View) -->
+        <aside class="w-16 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-200">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-handshake text-white text-lg"></i>
+                </div>
+            </div>
+            
+            <!-- Collapsed Navigation -->
+            <nav class="flex-1 p-2 space-y-2">
+                <a href="#" class="flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" title="Dashboard">
+                    <i class="fas fa-chart-line text-lg"></i>
+                </a>
+                <a href="#" class="flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" title="Pipeline">
+                    <i class="fas fa-filter text-lg"></i>
+                </a>
+                <a href="#" class="flex items-center justify-center p-3 text-indigo-600 bg-indigo-50 rounded-lg" title="Deals">
+                    <i class="fas fa-briefcase text-lg"></i>
+                </a>
+                <a href="#" class="flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" title="AI Insights">
+                    <i class="fas fa-brain text-lg"></i>
+                </a>
+                <a href="#" class="flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" title="Academy">
+                    <i class="fas fa-graduation-cap text-lg"></i>
+                </a>
+            </nav>
+            
+            <!-- Expand Button -->
+            <div class="p-4 border-t border-gray-200">
+                <button class="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Deal Header -->
+            <header class="bg-white border-b border-gray-200">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <a href="#" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-arrow-left"></i>
+                            </a>
+                            <div>
+                                <div class="flex items-center space-x-3">
+                                    <h1 class="text-2xl font-bold text-gray-900">Enterprise Platform Deal</h1>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">Negotiation</span>
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                                        <span class="text-sm text-gray-600">At Risk</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-6 mt-2 text-sm text-gray-600">
+                                    <span><i class="fas fa-building mr-1"></i> TechCorp Industries</span>
+                                    <span><i class="fas fa-dollar-sign mr-1"></i> $450,000</span>
+                                    <span><i class="fas fa-calendar mr-1"></i> Close: Dec 15, 2024 (5 days)</span>
+                                    <span><i class="fas fa-user mr-1"></i> Owner: Alex Johnson</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="flex items-center space-x-3">
+                            <button class="action-button px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                                <i class="fas fa-tasks mr-2"></i>Create Action Plan
+                            </button>
+                            <button class="action-button px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+                                <i class="fas fa-users mr-2"></i>Schedule Meeting
+                            </button>
+                            <button class="px-3 py-2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Tabs -->
+                <div class="px-6 flex space-x-6 border-t border-gray-200">
+                    <button class="tab-button active">Overview</button>
+                    <button class="tab-button">Stakeholders</button>
+                    <button class="tab-button">Timeline</button>
+                    <button class="tab-button">Documents</button>
+                    <button class="tab-button">AI Insights</button>
+                    <button class="tab-button">Competitive Intel</button>
+                </div>
+            </header>
+            
+            <!-- Deal Content -->
+            <main class="flex-1 overflow-y-auto">
+                <!-- AI Alert Banner -->
+                <div class="bg-yellow-50 border-b border-yellow-200 px-6 py-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-semibold text-yellow-900">AI Coach Alert: Deal at Risk</h3>
+                            <p class="text-sm text-yellow-800 mt-1">
+                                Decision maker (Sarah Chen, CFO) hasn't been engaged in 2 weeks. Competitor (CompetitorX) has scheduled executive presentation. 
+                                <a href="#" class="font-medium underline">View recommended actions →</a>
+                            </p>
+                        </div>
+                        <button class="text-yellow-600 hover:text-yellow-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Top Metrics Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <!-- Deal Health Score -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-sm font-medium text-gray-500 mb-4">Deal Health Score</h3>
+                            <div class="relative">
+                                <svg class="w-32 h-32 mx-auto">
+                                    <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="12" fill="none" />
+                                    <circle cx="64" cy="64" r="56" stroke="#f59e0b" stroke-width="12" fill="none"
+                                        stroke-dasharray="352" stroke-dashoffset="123" class="health-ring"
+                                        transform="rotate(-90 64 64)" />
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <p class="text-3xl font-bold text-gray-900">65</p>
+                                        <p class="text-sm text-gray-500">At Risk</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Stakeholder Coverage</span>
+                                    <span class="text-yellow-600">60%</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Engagement Level</span>
+                                    <span class="text-red-600">Low</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Timeline Risk</span>
+                                    <span class="text-yellow-600">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stakeholder Map -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-500">Stakeholder Influence</h3>
+                                <a href="#" class="text-xs text-indigo-600 hover:text-indigo-700">View all</a>
+                            </div>
+                            <div class="relative h-48">
+                                <!-- Influence/Support Matrix -->
+                                <div class="absolute inset-0 border-l-2 border-b-2 border-gray-200">
+                                    <!-- Quadrant labels -->
+                                    <span class="absolute top-2 right-2 text-xs text-gray-400">Champion</span>
+                                    <span class="absolute top-2 left-2 text-xs text-gray-400">Skeptic</span>
+                                    <span class="absolute bottom-2 right-2 text-xs text-gray-400">Supporter</span>
+                                    <span class="absolute bottom-2 left-2 text-xs text-gray-400">Neutral</span>
+                                    
+                                    <!-- Stakeholder dots -->
+                                    <div class="influence-dot absolute w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer"
+                                        style="top: 20%; right: 25%;" title="John Smith - VP Sales">
+                                        JS
+                                    </div>
+                                    <div class="influence-dot absolute w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer"
+                                        style="top: 40%; right: 40%;" title="Mary Johnson - IT Director">
+                                        MJ
+                                    </div>
+                                    <div class="influence-dot absolute w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer"
+                                        style="top: 15%; left: 30%;" title="Sarah Chen - CFO (Decision Maker)">
+                                        SC
+                                    </div>
+                                    <div class="influence-dot absolute w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer"
+                                        style="bottom: 30%; left: 20%;" title="Tom Wilson - Analyst">
+                                        TW
+                                    </div>
+                                </div>
+                                <!-- Axes labels -->
+                                <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">Support →</span>
+                                <span class="absolute top-1/2 -left-6 transform -rotate-90 text-xs text-gray-500">Influence →</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Next Actions -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-sm font-medium text-gray-500 mb-4">Recommended Next Actions</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-phone text-red-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Call Sarah Chen (CFO)</p>
+                                        <p class="text-xs text-gray-500">Critical - Today</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-file-alt text-yellow-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Send ROI analysis</p>
+                                        <p class="text-xs text-gray-500">High - Tomorrow</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-users text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Schedule exec alignment</p>
+                                        <p class="text-xs text-gray-500">Medium - This week</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Competition Analysis -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-sm font-medium text-gray-500 mb-4">Competitive Landscape</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">CompetitorX</span>
+                                        <span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">High Threat</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Executive presentation scheduled</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Legacy System</span>
+                                        <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded">Medium</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Status quo option</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">In-house Build</span>
+                                        <span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Low</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Lacks resources</p>
+                                </div>
+                            </div>
+                            <a href="#" class="block mt-4 text-sm text-indigo-600 hover:text-indigo-700 text-center">
+                                View battlecards →
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Column - Timeline & Activities -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Deal Summary -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Deal Summary</h3>
+                                <div class="prose prose-sm max-w-none text-gray-600">
+                                    <p>TechCorp Industries is evaluating our Enterprise Platform solution to replace their legacy systems and enable digital transformation across their organization. The deal involves a 3-year contract with potential for expansion.</p>
+                                    
+                                    <h4 class="text-base font-semibold text-gray-900 mt-4 mb-2">Key Pain Points:</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Current system can't scale with business growth</li>
+                                        <li>Integration challenges with modern tools</li>
+                                        <li>High maintenance costs and downtime</li>
+                                        <li>Limited analytics and reporting capabilities</li>
+                                    </ul>
+                                    
+                                    <h4 class="text-base font-semibold text-gray-900 mt-4 mb-2">Value Proposition:</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>40% reduction in operational costs</li>
+                                        <li>Real-time analytics and insights</li>
+                                        <li>Seamless integration with existing tools</li>
+                                        <li>99.9% uptime guarantee</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activities Timeline -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">Activity Timeline</h3>
+                                    <button class="text-sm text-indigo-600 hover:text-indigo-700">
+                                        <i class="fas fa-plus mr-1"></i>Add activity
+                                    </button>
+                                </div>
+                                
+                                <div class="space-y-6">
+                                    <!-- Timeline Item 1 -->
+                                    <div class="timeline-item relative">
+                                        <div class="timeline-connector"></div>
+                                        <div class="flex items-start">
+                                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0 z-10">
+                                                <i class="fas fa-exclamation text-red-600"></i>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                                    <div class="flex items-start justify-between">
+                                                        <div>
+                                                            <h4 class="text-sm font-semibold text-gray-900">Competitor Alert</h4>
+                                                            <p class="text-sm text-gray-600 mt-1">CompetitorX scheduled executive presentation for next week</p>
+                                                            <p class="text-xs text-gray-500 mt-2">2 hours ago • System Alert</p>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Critical</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Timeline Item 2 -->
+                                    <div class="timeline-item relative">
+                                        <div class="timeline-connector"></div>
+                                        <div class="flex items-start">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0 z-10">
+                                                <i class="fas fa-phone text-blue-600"></i>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="border border-gray-200 rounded-lg p-4">
+                                                    <h4 class="text-sm font-semibold text-gray-900">Call with John Smith (VP Sales)</h4>
+                                                    <p class="text-sm text-gray-600 mt-1">Discussed pricing concerns and implementation timeline. Seems supportive but needs CFO approval.</p>
+                                                    <div class="mt-3 flex items-center space-x-4 text-xs text-gray-500">
+                                                        <span><i class="far fa-clock mr-1"></i>45 min</span>
+                                                        <span><i class="far fa-smile mr-1"></i>Positive</span>
+                                                        <span>Yesterday • Alex Johnson</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Timeline Item 3 -->
+                                    <div class="timeline-item relative">
+                                        <div class="timeline-connector"></div>
+                                        <div class="flex items-start">
+                                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0 z-10">
+                                                <i class="fas fa-file-alt text-green-600"></i>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="border border-gray-200 rounded-lg p-4">
+                                                    <h4 class="text-sm font-semibold text-gray-900">Proposal Sent</h4>
+                                                    <p class="text-sm text-gray-600 mt-1">Sent revised proposal with 10% discount and extended implementation support</p>
+                                                    <p class="text-xs text-gray-500 mt-2">3 days ago • Alex Johnson</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column - Key Information -->
+                        <div class="space-y-6">
+                            <!-- Deal Details -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Deal Details</h3>
+                                <dl class="space-y-3">
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Account</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">TechCorp Industries</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Deal Value</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">$450,000 (3-year contract)</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Probability</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">65%</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Expected Close</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">December 15, 2024 (5 days)</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Deal Type</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">New Business</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-medium text-gray-500">Lead Source</dt>
+                                        <dd class="text-sm text-gray-900 mt-1">Partner Referral</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            
+                            <!-- Key Stakeholders -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">Key Stakeholders</h3>
+                                    <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700">Manage</a>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border border-red-200 bg-red-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://ui-avatars.com/api/?name=Sarah+Chen&background=ef4444&color=fff" 
+                                                alt="Sarah Chen" class="w-10 h-10 rounded-full mr-3">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Sarah Chen</p>
+                                                <p class="text-xs text-gray-600">CFO • Decision Maker</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-red-600">Not Engaged</span>
+                                            <p class="text-xs text-gray-500">14 days</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://ui-avatars.com/api/?name=John+Smith&background=10b981&color=fff" 
+                                                alt="John Smith" class="w-10 h-10 rounded-full mr-3">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">John Smith</p>
+                                                <p class="text-xs text-gray-600">VP Sales • Champion</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-green-600">Engaged</span>
+                                            <p class="text-xs text-gray-500">Yesterday</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://ui-avatars.com/api/?name=Mary+Johnson&background=3b82f6&color=fff" 
+                                                alt="Mary Johnson" class="w-10 h-10 rounded-full mr-3">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Mary Johnson</p>
+                                                <p class="text-xs text-gray-600">IT Director • Influencer</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-blue-600">Supportive</span>
+                                            <p class="text-xs text-gray-500">3 days ago</p>
+                                        </div>

@@ -1,0 +1,496 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  REP
+  VIEWER
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum DealStage {
+  PROSPECTING
+  QUALIFICATION
+  NEEDS_ANALYSIS
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum DealType {
+  NEW_BUSINESS
+  EXPANSION
+  RENEWAL
+  UPSELL
+}
+
+enum DecisionPower {
+  DECISION_MAKER
+  INFLUENCER
+  GATEKEEPER
+  USER
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  DEMO
+  PROPOSAL
+  FOLLOW_UP
+  RESEARCH
+  INTERNAL_MEETING
+}
+
+enum ActivityOutcome {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  NO_RESPONSE
+}
+
+enum InsightType {
+  RISK_ALERT
+  OPPORTUNITY
+  RECOMMENDATION
+  WARNING
+}
+
+enum CourseCategory {
+  SALES_FUNDAMENTALS
+  NEGOTIATION
+  PROSPECTING
+  CLOSING
+  PRODUCT_KNOWLEDGE
+  SOFT_SKILLS
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  SIMULATION
+  QUIZ
+  INTERACTIVE
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum VoiceSessionType {
+  PRACTICE
+  SIMULATION
+  COACHING
+  ASSESSMENT
+}
+
+enum IntegrationType {
+  SALESFORCE
+  HUBSPOT
+  LINKEDIN
+  OUTLOOK
+  GMAIL
+  ZOOM
+  TEAMS
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  PENDING
+}
+
+enum SyncAction {
+  CREATE
+  UPDATE
+  DELETE
+  SYNC
+}
+
+enum SyncStatus {
+  SUCCESS
+  ERROR
+  PENDING
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+// Users & Authentication
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  role         UserRole  @default(REP)
+  companyId    String?   @map("company_id")
+  avatarUrl    String?   @map("avatar_url")
+  timezone     String?   @default("UTC")
+  preferences  Json?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  // Relations
+  company         Company?           @relation(fields: [companyId], references: [id])
+  ownedDeals      Deal[]             @relation("DealOwner")
+  activities      Activity[]
+  userProgress    UserProgress[]
+  voiceSessions   VoiceSession[]
+  sessions        Session[]
+  aiInsights      AiInsight[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Company {
+  id               String        @id @default(cuid())
+  name             String
+  domain           String?       @unique
+  industry         String?
+  size             CompanySize?
+  subscriptionPlan String?       @map("subscription_plan")
+  settings         Json?
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  users        User[]
+  deals        Deal[]
+  integrations Integration[]
+
+  @@map("companies")
+}
+
+// Deals & Pipeline
+model Deal {
+  id             String     @id @default(cuid())
+  name           String
+  companyId      String     @map("company_id")
+  ownerId        String     @map("owner_id")
+  accountId      String?    @map("account_id")
+  value          Decimal?
+  currency       String?    @default("USD")
+  stage          DealStage  @default(PROSPECTING)
+  probability    Int?       @default(0)
+  closeDate      DateTime?  @map("close_date")
+  source         String?
+  dealType       DealType?  @map("deal_type")
+  competitorInfo Json?      @map("competitor_info")
+  painPoints     Json?      @map("pain_points")
+  solutionFit    Json?      @map("solution_fit")
+  healthScore    Int?       @map("health_score")
+  riskFactors    Json?      @map("risk_factors")
+  nextActions    Json?      @map("next_actions")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  closedAt       DateTime?  @map("closed_at")
+
+  // Relations
+  company           Company             @relation(fields: [companyId], references: [id])
+  owner             User                @relation("DealOwner", fields: [ownerId], references: [id])
+  account           Account?            @relation(fields: [accountId], references: [id])
+  activities        Activity[]
+  dealStakeholders  DealStakeholder[]
+  aiInsights        AiInsight[]
+  healthScores      DealHealthScore[]
+
+  @@map("deals")
+}
+
+model Account {
+  id            String    @id @default(cuid())
+  name          String
+  domain        String?
+  industry      String?
+  size          String?
+  annualRevenue Decimal?  @map("annual_revenue")
+  location      Json?
+  description   String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  deals        Deal[]
+  stakeholders Stakeholder[]
+
+  @@map("accounts")
+}
+
+// Stakeholders & Relationships
+model Stakeholder {
+  id                  String        @id @default(cuid())
+  accountId           String        @map("account_id")
+  firstName           String        @map("first_name")
+  lastName            String        @map("last_name")
+  email               String?
+  phone               String?
+  title               String?
+  department          String?
+  influenceLevel      Int?          @map("influence_level") @default(5)
+  supportLevel        Int?          @map("support_level") @default(5)
+  decisionPower       DecisionPower? @map("decision_power")
+  communicationStyle  String?       @map("communication_style")
+  personalDrivers     Json?         @map("personal_drivers")
+  linkedinUrl         String?       @map("linkedin_url")
+  notes               String?
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  account           Account             @relation(fields: [accountId], references: [id])
+  dealStakeholders  DealStakeholder[]
+  activities        Activity[]
+
+  @@map("stakeholders")
+}
+
+model DealStakeholder {
+  dealId               String    @map("deal_id")
+  stakeholderId        String    @map("stakeholder_id")
+  roleInDeal           String?   @map("role_in_deal")
+  relationshipStrength Int?      @map("relationship_strength") @default(5)
+  lastContact          DateTime? @map("last_contact")
+  engagementScore      Int?      @map("engagement_score") @default(0)
+  notes                String?
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  deal        Deal        @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  stakeholder Stakeholder @relation(fields: [stakeholderId], references: [id])
+
+  @@id([dealId, stakeholderId])
+  @@map("deal_stakeholders")
+}
+
+// Activities & Timeline
+model Activity {
+  id             String           @id @default(cuid())
+  dealId         String           @map("deal_id")
+  userId         String           @map("user_id")
+  stakeholderId  String?          @map("stakeholder_id")
+  type           ActivityType
+  subject        String
+  description    String?
+  outcome        ActivityOutcome?
+  sentimentScore Int?             @map("sentiment_score")
+  aiInsights     Json?            @map("ai_insights")
+  scheduledAt    DateTime?        @map("scheduled_at")
+  completedAt    DateTime?        @map("completed_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  followUpDate   DateTime?        @map("follow_up_date")
+
+  // Relations
+  deal        Deal         @relation(fields: [dealId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  stakeholder Stakeholder? @relation(fields: [stakeholderId], references: [id])
+
+  @@map("activities")
+}
+
+// AI & Analytics
+model AiInsight {
+  id               String      @id @default(cuid())
+  dealId           String      @map("deal_id")
+  userId           String?     @map("user_id")
+  type             InsightType
+  confidenceScore  Int         @map("confidence_score")
+  title            String
+  description      String
+  suggestedActions Json?       @map("suggested_actions")
+  isAcknowledged   Boolean     @default(false) @map("is_acknowledged")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  expiresAt        DateTime?   @map("expires_at")
+
+  // Relations
+  deal Deal  @relation(fields: [dealId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("ai_insights")
+}
+
+model DealHealthScore {
+  id                String   @id @default(cuid())
+  dealId            String   @map("deal_id")
+  overallScore      Int      @map("overall_score")
+  stakeholderScore  Int      @map("stakeholder_score")
+  engagementScore   Int      @map("engagement_score")
+  timelineScore     Int      @map("timeline_score")
+  competitionScore  Int      @map("competition_score")
+  factors           Json?
+  calculatedAt      DateTime @map("calculated_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  // Relations
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@map("deal_health_scores")
+}
+
+// Learning & Development
+model Course {
+  id                 String            @id @default(cuid())
+  title              String
+  description        String?
+  category           CourseCategory
+  difficultyLevel    DifficultyLevel   @map("difficulty_level")
+  estimatedDuration  Int               @map("estimated_duration")
+  learningObjectives Json?             @map("learning_objectives")
+  prerequisites      Json?
+  isActive           Boolean           @default(true) @map("is_active")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  lessons      Lesson[]
+  userProgress UserProgress[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id              String      @id @default(cuid())
+  courseId        String      @map("course_id")
+  title           String
+  content         Json?
+  lessonType      LessonType  @map("lesson_type")
+  durationMinutes Int         @map("duration_minutes")
+  orderIndex      Int         @map("order_index")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  course       Course         @relation(fields: [courseId], references: [id])
+  userProgress UserProgress[]
+
+  @@map("lessons")
+}
+
+model UserProgress {
+  id                  String         @id @default(cuid())
+  userId              String         @map("user_id")
+  courseId            String         @map("course_id")
+  lessonId            String?        @map("lesson_id")
+  status              ProgressStatus @default(NOT_STARTED)
+  progressPercentage  Int            @default(0) @map("progress_percentage")
+  score               Int?
+  timeSpentMinutes    Int            @default(0) @map("time_spent_minutes")
+  startedAt           DateTime?      @map("started_at")
+  completedAt         DateTime?      @map("completed_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  user   User    @relation(fields: [userId], references: [id])
+  course Course  @relation(fields: [courseId], references: [id])
+  lesson Lesson? @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, courseId, lessonId])
+  @@map("user_progress")
+}
+
+// Voice Coaching & Simulations
+model VoiceSession {
+  id               String            @id @default(cuid())
+  userId           String            @map("user_id")
+  sessionType      VoiceSessionType  @map("session_type")
+  transcript       String?
+  audioUrl         String?           @map("audio_url")
+  aiFeedback       Json?             @map("ai_feedback")
+  confidenceScore  Int?              @map("confidence_score")
+  paceScore        Int?              @map("pace_score")
+  clarityScore     Int?              @map("clarity_score")
+  engagementScore  Int?              @map("engagement_score")
+  durationSeconds  Int               @map("duration_seconds")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  analyzedAt       DateTime?         @map("analyzed_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("voice_sessions")
+}
+
+// Integrations & External Data
+model Integration {
+  id          String            @id @default(cuid())
+  companyId   String            @map("company_id")
+  type        IntegrationType
+  config      Json?
+  status      IntegrationStatus @default(INACTIVE)
+  lastSyncAt  DateTime?         @map("last_sync_at")
+  syncErrors  Json?             @map("sync_errors")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  company  Company   @relation(fields: [companyId], references: [id])
+  syncLogs SyncLog[]
+
+  @@map("integrations")
+}
+
+model SyncLog {
+  id            String      @id @default(cuid())
+  integrationId String      @map("integration_id")
+  entityType    String      @map("entity_type")
+  entityId      String      @map("entity_id")
+  action        SyncAction
+  status        SyncStatus
+  errorMessage  String?     @map("error_message")
+  syncedAt      DateTime    @map("synced_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  integration Integration @relation(fields: [integrationId], references: [id])
+
+  @@map("sync_logs")
+}

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deal Closer™ - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Hover effects */
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+            border-left-color: #6366f1;
+        }
+        .nav-item.active {
+            background-color: rgba(99, 102, 241, 0.1);
+            border-left-color: #6366f1;
+            color: #6366f1;
+        }
+        
+        /* Deal health indicators */
+        .health-green { background-color: #10b981; }
+        .health-yellow { background-color: #f59e0b; }
+        .health-red { background-color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-handshake text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Deal Closer™</h1>
+                        <p class="text-xs text-gray-500">Dealcrafter Framework</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <!-- Dashboard -->
+                <a href="#" class="nav-item active flex items-center px-3 py-2 text-sm font-medium rounded-md border-l-4 border-transparent">
+                    <i class="fas fa-chart-line w-5 h-5 mr-3 text-gray-400"></i>
+                    Dashboard
+                </a>
+                
+                <!-- Pipeline -->
+                <div class="pt-4">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Sales</p>
+                    <div class="mt-2 space-y-1">
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-filter w-5 h-5 mr-3 text-gray-400"></i>
+                            Smart Pipeline
+                            <span class="ml-auto bg-indigo-100 text-indigo-600 px-2 py-0.5 text-xs rounded-full">12</span>
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-briefcase w-5 h-5 mr-3 text-gray-400"></i>
+                            Deals
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-users w-5 h-5 mr-3 text-gray-400"></i>
+                            Stakeholders
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-building w-5 h-5 mr-3 text-gray-400"></i>
+                            Accounts
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- AI & Insights -->
+                <div class="pt-4">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Intelligence</p>
+                    <div class="mt-2 space-y-1">
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-brain w-5 h-5 mr-3 text-gray-400"></i>
+                            AI Insights
+                            <span class="ml-auto bg-green-100 text-green-600 px-2 py-0.5 text-xs rounded-full">New</span>
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-chart-bar w-5 h-5 mr-3 text-gray-400"></i>
+                            Forecasting
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-shield-alt w-5 h-5 mr-3 text-gray-400"></i>
+                            Deal War Room
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Learning -->
+                <div class="pt-4">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Academy</p>
+                    <div class="mt-2 space-y-1">
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-graduation-cap w-5 h-5 mr-3 text-gray-400"></i>
+                            Learning Paths
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-microphone w-5 h-5 mr-3 text-gray-400"></i>
+                            Voice Coach
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-gamepad w-5 h-5 mr-3 text-gray-400"></i>
+                            Simulations
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team -->
+                <div class="pt-4">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Team</p>
+                    <div class="mt-2 space-y-1">
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-user-friends w-5 h-5 mr-3 text-gray-400"></i>
+                            Team Performance
+                        </a>
+                        <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md border-l-4 border-transparent">
+                            <i class="fas fa-trophy w-5 h-5 mr-3 text-gray-400"></i>
+                            Leaderboard
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Bottom Section -->
+            <div class="p-4 border-t border-gray-200">
+                <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md">
+                    <i class="fas fa-plug w-5 h-5 mr-3 text-gray-400"></i>
+                    Integrations
+                </a>
+                <a href="#" class="nav-item flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md">
+                    <i class="fas fa-cog w-5 h-5 mr-3 text-gray-400"></i>
+                    Settings
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- Search -->
+                        <div class="relative">
+                            <input type="text" placeholder="Search deals, accounts, or stakeholders..." 
+                                class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <button class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>New Deal
+                        </button>
+                    </div>
+                    
+                    <!-- Right Section -->
+                    <div class="flex items-center space-x-4">
+                        <!-- AI Assistant -->
+                        <button class="relative p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-robot text-xl"></i>
+                            <span class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <button class="relative p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                        </button>
+                        
+                        <!-- User Profile -->
+                        <div class="flex items-center space-x-3 pl-4 border-l border-gray-200">
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-700">Alex Johnson</p>
+                                <p class="text-xs text-gray-500">Sales Manager</p>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=6366f1&color=fff" 
+                                alt="Profile" class="w-10 h-10 rounded-full">
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Dashboard Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Welcome Section -->
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Welcome back, Alex!</h2>
+                    <p class="text-gray-600">Here's what's happening with your deals today.</p>
+                </div>
+                
+                <!-- AI Coach Recommendations -->
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-6 text-white mb-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">
+                                <i class="fas fa-lightbulb mr-2"></i>AI Coach Recommendations
+                            </h3>
+                            <div class="space-y-2">
+                                <p class="text-sm opacity-90">
+                                    <i class="fas fa-exclamation-circle mr-2"></i>
+                                    <strong>TechCorp Deal</strong> needs stakeholder engagement - No contact with decision maker in 2 weeks
+                                </p>
+                                <p class="text-sm opacity-90">
+                                    <i class="fas fa-chart-line mr-2"></i>
+                                    <strong>GlobalSoft Opportunity</strong> showing positive signals - Schedule demo this week to maintain momentum
+                                </p>
+                            </div>
+                        </div>
+                        <button class="text-white/80 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Metrics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Pipeline Value -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Pipeline Value</h3>
+                            <i class="fas fa-dollar-sign text-green-500"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">$2.4M</p>
+                        <p class="text-sm text-green-600 mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i>12% from last month
+                        </p>
+                    </div>
+                    
+                    <!-- Active Deals -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Active Deals</h3>
+                            <i class="fas fa-briefcase text-indigo-500"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">34</p>
+                        <div class="flex items-center mt-1 text-sm">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                            <span class="text-gray-600">12 in final stage</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Win Rate -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Win Rate</h3>
+                            <i class="fas fa-trophy text-yellow-500"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">68%</p>
+                        <p class="text-sm text-gray-600 mt-1">Industry avg: 54%</p>
+                    </div>
+                    
+                    <!-- Learning Progress -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-medium text-gray-500">Learning Progress</h3>
+                            <i class="fas fa-graduation-cap text-purple-500"></i>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900">85%</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Deals Grid -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900">Active Deals Requiring Attention</h3>
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700">View all deals →</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="pb-3">Deal Name</th>
+                                        <th class="pb-3">Account</th>
+                                        <th class="pb-3">Value</th>
+                                        <th class="pb-3">Stage</th>
+                                        <th class="pb-3">Health</th>
+                                        <th class="pb-3">Next Action</th>
+                                        <th class="pb-3">Close Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="font-medium text-gray-900">Enterprise Platform Deal</div>
+                                            <div class="text-sm text-gray-500">High priority</div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">TechCorp Industries</td>
+                                        <td class="py-4 text-sm font-medium text-gray-900">$450,000</td>
+                                        <td class="py-4">
+                                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">Negotiation</span>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <span class="w-2 h-2 health-yellow rounded-full mr-2"></span>
+                                                <span class="text-sm text-gray-600">At Risk</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">Schedule exec meeting</td>
+                                        <td class="py-4 text-sm text-gray-600">Dec 15, 2024</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="font-medium text-gray-900">SaaS Migration Project</div>
+                                            <div class="text-sm text-gray-500">Champion engaged</div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">GlobalSoft Ltd</td>
+                                        <td class="py-4 text-sm font-medium text-gray-900">$280,000</td>
+                                        <td class="py-4">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">Proposal</span>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <span class="w-2 h-2 health-green rounded-full mr-2"></span>
+                                                <span class="text-sm text-gray-600">On Track</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">Send final proposal</td>
+                                        <td class="py-4 text-sm text-gray-600">Dec 22, 2024</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-4">
+                                            <div class="font-medium text-gray-900">Digital Transformation</div>
+                                            <div class="text-sm text-gray-500">Multiple stakeholders</div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">Innovate Corp</td>
+                                        <td class="py-4 text-sm font-medium text-gray-900">$675,000</td>
+                                        <td class="py-4">
+                                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">Discovery</span>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="flex items-center">
+                                                <span class="w-2 h-2 health-red rounded-full mr-2"></span>
+                                                <span class="text-sm text-gray-600">Needs Attention</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-600">Map stakeholders</td>
+                                        <td class="py-4 text-sm text-gray-600">Jan 30, 2025</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <!-- Recent Activities -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-phone text-blue-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Call with John Smith (TechCorp)</p>
+                                    <p class="text-xs text-gray-500">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-check text-green-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Proposal sent to GlobalSoft</p>
+                                    <p class="text-xs text-gray-500">5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fas fa-calendar text-purple-600 text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Demo scheduled with Innovate Corp</p>
+                                    <p class="text-xs text-gray-500">Yesterday</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Team Leaderboard -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Team Leaderboard</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-lg font-bold text-yellow-500 mr-3">1</span>
+                                    <img src="https://ui-avatars.com/api/?name=Sarah+Chen&background=10b981&color=fff" 
+                                        alt="Sarah" class="w-8 h-8 rounded-full mr-2">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Sarah Chen</p>
+                                        <p class="text-xs text-gray-500">142% of quota</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-green-600">$1.2M</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-lg font-bold text-gray-400 mr-3">2</span>
+                                    <img src="https://ui-avatars.com/api/?name=Mike+Ross&background=3b82f6&color=fff" 
+                                        alt="Mike" class="w-8 h-8 rounded-full mr-2">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Mike Ross</p>
+                                        <p class="text-xs text-gray-500">128% of quota</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-gray-600">$980K</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-lg font-bold text-gray-400 mr-3">3</span>
+                                    <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=6366f1&color=fff" 
+                                        alt="You" class="w-8 h-8 rounded-full mr-2">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">You</p>
+                                        <p class="text-xs text-gray-500">115% of quota</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-gray-600">$875K</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Learning Progress -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Learning Journey</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <p class="text-sm font-medium text-gray-700">Negotiation Mastery</p>
+                                    <span class="text-xs text-gray-500">75%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <p class="text-sm font-medium text-gray-700">Stakeholder Mapping</p>
+                                    <span class="text-xs text-gray-500">100%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <p class="text-sm font-medium text-gray-700">Voice Coaching</p>
+                                    <span class="text-xs text-gray-500">45%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-4 w-full px-4 py-2 bg-indigo-50 text-indigo-600 text-sm font-medium rounded-lg hover:bg-indigo-100 transition-colors">
+                            Continue Learning →
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu Toggle (for responsive) -->
+    <script>
+        // Add interactive behavior here if needed
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
